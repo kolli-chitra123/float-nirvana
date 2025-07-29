@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - Float Nirvana</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f766e 0%, #1d4ed8 100%);
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-6">
+                <div class="flex items-center space-x-4">
+                    <div class="bg-white/20 rounded-full p-2">
+                        <i data-lucide="waves" class="w-8 h-8"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold">Float Nirvana</h1>
+                        <p class="text-teal-100">User Dashboard</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="bg-white/10 px-4 py-2 rounded-lg">
+                        <span class="text-sm" id="welcomeMessage">Welcome, User!</span>
+                    </div>
+                    <button onclick="openCart()" class="bg-white/20 hover:bg-white/30 p-2 rounded-lg transition-colors relative">
+                        <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                        <span id="cartCount" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
+                    </button>
+                    <button onclick="logout()" class="bg-white/20 hover:bg-white/30 p-2 rounded-lg transition-colors">
+                        <i data-lucide="log-out" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Welcome Section -->
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Welcome to Your Wellness Journey</h2>
+            <p class="text-gray-600">Manage your bookings, track your progress, and explore our wellness offerings</p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Total Sessions</p>
+                        <p class="text-3xl font-bold text-gray-900">12</p>
+                    </div>
+                    <div class="bg-teal-100 p-3 rounded-xl">
+                        <i data-lucide="calendar" class="w-8 h-8 text-teal-600"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Next Session</p>
+                        <p class="text-lg font-bold text-gray-900">Tomorrow</p>
+                        <p class="text-sm text-gray-500">2:00 PM</p>
+                    </div>
+                    <div class="bg-blue-100 p-3 rounded-xl">
+                        <i data-lucide="clock" class="w-8 h-8 text-blue-600"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Wellness Points</p>
+                        <p class="text-3xl font-bold text-gray-900">850</p>
+                    </div>
+                    <div class="bg-purple-100 p-3 rounded-xl">
+                        <i data-lucide="star" class="w-8 h-8 text-purple-600"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Membership</p>
+                        <p class="text-lg font-bold text-gray-900">Premium</p>
+                        <p class="text-sm text-green-600">Active</p>
+                    </div>
+                    <div class="bg-green-100 p-3 rounded-xl">
+                        <i data-lucide="crown" class="w-8 h-8 text-green-600"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6">Quick Actions</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button onclick="openBookSession()" class="card-hover bg-gradient-to-r from-teal-500 to-teal-600 text-white p-6 rounded-xl transition-all duration-200">
+                            <i data-lucide="calendar-plus" class="w-8 h-8 mb-3"></i>
+                            <h4 class="font-semibold">Book Session</h4>
+                            <p class="text-sm text-teal-100">Schedule your next float</p>
+                        </button>
+
+                        <button onclick="openShopWellness()" class="card-hover bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-xl transition-all duration-200">
+                            <i data-lucide="shopping-bag" class="w-8 h-8 mb-3"></i>
+                            <h4 class="font-semibold">Shop Wellness</h4>
+                            <p class="text-sm text-blue-100">Browse our products</p>
+                        </button>
+
+                        <button onclick="openProfile()" class="card-hover bg-gradient-to-r from-purple-500 to-purple-600 text-white p-6 rounded-xl transition-all duration-200">
+                            <i data-lucide="user" class="w-8 h-8 mb-3"></i>
+                            <h4 class="font-semibold">Profile</h4>
+                            <p class="text-sm text-purple-100">Update your info</p>
+                        </button>
+
+                        <button onclick="openSupport()" class="card-hover bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-xl transition-all duration-200">
+                            <i data-lucide="headphones" class="w-8 h-8 mb-3"></i>
+                            <h4 class="font-semibold">Support</h4>
+                            <p class="text-sm text-green-100">Get help</p>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recent Bookings -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6">Recent Bookings</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                            <div class="flex items-center space-x-4">
+                                <div class="bg-teal-100 p-2 rounded-lg">
+                                    <i data-lucide="waves" class="w-5 h-5 text-teal-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Relaxation Float</h4>
+                                    <p class="text-sm text-gray-500">60 minutes • Tomorrow 2:00 PM</p>
+                                </div>
+                            </div>
+                            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">Confirmed</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                            <div class="flex items-center space-x-4">
+                                <div class="bg-blue-100 p-2 rounded-lg">
+                                    <i data-lucide="brain" class="w-5 h-5 text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Therapy Session</h4>
+                                    <p class="text-sm text-gray-500">90 minutes • Last week</p>
+                                </div>
+                            </div>
+                            <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">Completed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="space-y-6">
+                <!-- Wellness Progress -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6">Wellness Progress</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span class="text-gray-600">Stress Relief</span>
+                                <span class="text-gray-900 font-medium">85%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-teal-600 h-2 rounded-full" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span class="text-gray-600">Mental Clarity</span>
+                                <span class="text-gray-900 font-medium">72%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-blue-600 h-2 rounded-full" style="width: 72%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span class="text-gray-600">Energy Level</span>
+                                <span class="text-gray-900 font-medium">90%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-purple-600 h-2 rounded-full" style="width: 90%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recommendations -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6">AI Recommendations</h3>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-teal-50 border border-teal-200 rounded-lg">
+                            <h4 class="font-semibold text-teal-900 mb-2">Meditation Float</h4>
+                            <p class="text-sm text-teal-700">Based on your stress levels, try a 45-minute meditation session.</p>
+                        </div>
+                        
+                        <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                            <h4 class="font-semibold text-blue-900 mb-2">Evening Sessions</h4>
+                            <p class="text-sm text-blue-700">Your energy peaks suggest evening sessions would be most beneficial.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Book Session Modal -->
+    <div id="bookSessionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-gray-900">Book a Session</h3>
+                        <button onclick="closeModal('bookSessionModal')" class="text-gray-400 hover:text-gray-600">
+                            <i data-lucide="x" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div id="sessionsContainer" class="space-y-4">
+                        <div class="text-center py-8">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600 mx-auto"></div>
+                            <p class="text-gray-500 mt-2">Loading sessions...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shop Wellness Modal -->
+    <div id="shopWellnessModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-gray-900">Shop Wellness Products</h3>
+                        <button onclick="closeModal('shopWellnessModal')" class="text-gray-400 hover:text-gray-600">
+                            <i data-lucide="x" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div id="productsContainer" class="space-y-4">
+                        <div class="text-center py-8">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                            <p class="text-gray-500 mt-2">Loading products...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl max-w-md w-full">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-gray-900">Update Profile</h3>
+                        <button onclick="closeModal('profileModal')" class="text-gray-400 hover:text-gray-600">
+                            <i data-lucide="x" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <form id="profileForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                            <input type="text" id="profileName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <input type="email" id="profileEmail" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" readonly>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                            <input type="tel" id="profilePhone" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        </div>
+                        <button type="submit" class="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors">
+                            Update Profile
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Support Modal -->
+    <div id="supportModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl max-w-md w-full">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-gray-900">Contact Support</h3>
+                        <button onclick="closeModal('supportModal')" class="text-gray-400 hover:text-gray-600">
+                            <i data-lucide="x" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <form id="supportForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                            <select id="supportCategory" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                <option value="technical">Technical Issue</option>
+                                <option value="billing">Billing Question</option>
+                                <option value="booking">Booking Help</option>
+                                <option value="general">General Inquiry</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+                            <input type="text" id="supportSubject" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Message</label>
+                            <textarea id="supportMessage" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" required></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors">
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-gray-900">Shopping Cart</h3>
+                        <button onclick="closeModal('cartModal')" class="text-gray-400 hover:text-gray-600">
+                            <i data-lucide="x" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div id="cartItemsContainer">
+                        <div class="text-center py-8">
+                            <i data-lucide="shopping-cart" class="w-16 h-16 text-gray-300 mx-auto mb-4"></i>
+                            <p class="text-gray-500">Your cart is empty</p>
+                        </div>
+                    </div>
+                    <div id="cartSummary" class="hidden border-t border-gray-200 pt-4 mt-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-lg font-semibold">Total:</span>
+                            <span id="cartTotal" class="text-xl font-bold text-blue-600">₹0</span>
+                        </div>
+                        <div class="flex space-x-3">
+                            <button onclick="clearCart()" class="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors">
+                                Clear Cart
+                            </button>
+                            <button onclick="checkout()" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                                Checkout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Cart management
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        // Get user info from localStorage (if available)
+        const userData = localStorage.getItem('user');
+        if (userData) {
+            const user = JSON.parse(userData);
+            document.getElementById('welcomeMessage').textContent = `Welcome, ${user.name}!`;
+        }
+
+        // Initialize cart display
+        updateCartDisplay();
+        
+        // Logout function
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'checkpoint6-index.html';
+        }
+        
+        // Check if user is logged in
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = 'checkpoint6-login.html';
+        }
+
+        // Quick Actions Functions
+        async function openBookSession() {
+            document.getElementById('bookSessionModal').classList.remove('hidden');
+            await loadSessions();
+        }
+
+        async function openShopWellness() {
+            document.getElementById('shopWellnessModal').classList.remove('hidden');
+            await loadProducts();
+        }
+
+        function openProfile() {
+            document.getElementById('profileModal').classList.remove('hidden');
+            loadUserProfile();
+        }
+
+        function openSupport() {
+            document.getElementById('supportModal').classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        // Load Sessions for Booking
+        async function loadSessions() {
+            try {
+                const response = await fetch('http://localhost:3001/api/sessions');
+                const sessions = await response.json();
+
+                const container = document.getElementById('sessionsContainer');
+
+                if (sessions.length === 0) {
+                    container.innerHTML = '<p class="text-center text-gray-500">No sessions available</p>';
+                    return;
+                }
+
+                container.innerHTML = sessions.map(session => `
+                    <div class="border border-gray-200 rounded-lg p-4 hover:border-teal-500 transition-colors">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-semibold text-gray-900">${session.title}</h4>
+                            <span class="text-lg font-bold text-teal-600">₹${session.price}</span>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-3">${session.description}</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500">${session.duration} minutes</span>
+                            <button onclick="bookSession('${session._id}', '${session.title}', ${session.price})"
+                                    class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors">
+                                Book Now
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+
+                lucide.createIcons();
+            } catch (error) {
+                console.error('Error loading sessions:', error);
+                document.getElementById('sessionsContainer').innerHTML =
+                    '<p class="text-center text-red-500">Error loading sessions</p>';
+            }
+        }
+
+        // Book a Session
+        async function bookSession(sessionId, sessionTitle, price) {
+            const user = JSON.parse(localStorage.getItem('user'));
+
+            try {
+                const response = await fetch('http://localhost:3001/api/bookings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        userId: user.id,
+                        sessionId: sessionId,
+                        date: new Date().toISOString().split('T')[0],
+                        time: '14:00',
+                        totalAmount: price
+                    })
+                });
+
+                if (response.ok) {
+                    alert(`✅ Successfully booked: ${sessionTitle}`);
+                    closeModal('bookSessionModal');
+                } else {
+                    const error = await response.json();
+                    alert(`❌ Booking failed: ${error.error}`);
+                }
+            } catch (error) {
+                console.error('Error booking session:', error);
+                alert('❌ Booking failed. Please try again.');
+            }
+        }
+
+        // Load Products for Shop Wellness
+        async function loadProducts() {
+            try {
+                const response = await fetch('http://localhost:3001/api/products');
+                const products = await response.json();
+
+                const container = document.getElementById('productsContainer');
+
+                if (products.length === 0) {
+                    container.innerHTML = '<p class="text-center text-gray-500">No products available</p>';
+                    return;
+                }
+
+                container.innerHTML = products.map(product => `
+                    <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-500 transition-colors">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-semibold text-gray-900">${product.name}</h4>
+                            <span class="text-lg font-bold text-blue-600">₹${product.price}</span>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-3">${product.description}</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500 capitalize">${product.category}</span>
+                            <button onclick="addToCart('${product._id}', '${product.name}', ${product.price})"
+                                    class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+
+                lucide.createIcons();
+            } catch (error) {
+                console.error('Error loading products:', error);
+                document.getElementById('productsContainer').innerHTML =
+                    '<p class="text-center text-red-500">Error loading products</p>';
+            }
+        }
+
+        // Add to Cart
+        async function addToCart(productId, productName, price) {
+            // Check if item already exists in cart
+            const existingItem = cart.find(item => item.id === productId);
+
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: productId,
+                    name: productName,
+                    price: price,
+                    quantity: 1
+                });
+            }
+
+            // Save cart to localStorage
+            localStorage.setItem('cart', JSON.stringify(cart));
+
+            // Update cart display
+            updateCartDisplay();
+
+            // Show success message
+            alert(`✅ Added to cart: ${productName} (₹${price})`);
+        }
+
+        // Open Cart Modal
+        function openCart() {
+            document.getElementById('cartModal').classList.remove('hidden');
+            displayCartItems();
+        }
+
+        // Update Cart Display (badge)
+        function updateCartDisplay() {
+            const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+            const cartBadge = document.getElementById('cartCount');
+
+            if (cartCount > 0) {
+                cartBadge.textContent = cartCount;
+                cartBadge.classList.remove('hidden');
+            } else {
+                cartBadge.classList.add('hidden');
+            }
+        }
+
+        // Display Cart Items in Modal
+        function displayCartItems() {
+            const container = document.getElementById('cartItemsContainer');
+            const summary = document.getElementById('cartSummary');
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8">
+                        <i data-lucide="shopping-cart" class="w-16 h-16 text-gray-300 mx-auto mb-4"></i>
+                        <p class="text-gray-500">Your cart is empty</p>
+                    </div>
+                `;
+                summary.classList.add('hidden');
+                lucide.createIcons();
+                return;
+            }
+
+            container.innerHTML = cart.map(item => `
+                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg mb-3">
+                    <div class="flex-1">
+                        <h4 class="font-semibold text-gray-900">${item.name}</h4>
+                        <p class="text-gray-600">₹${item.price} each</p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <div class="flex items-center space-x-2">
+                            <button onclick="updateQuantity('${item.id}', ${item.quantity - 1})"
+                                    class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300">
+                                <i data-lucide="minus" class="w-4 h-4"></i>
+                            </button>
+                            <span class="w-8 text-center font-semibold">${item.quantity}</span>
+                            <button onclick="updateQuantity('${item.id}', ${item.quantity + 1})"
+                                    class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <span class="font-bold text-blue-600 w-20 text-right">₹${item.price * item.quantity}</span>
+                        <button onclick="removeFromCart('${item.id}')"
+                                class="text-red-500 hover:text-red-700 p-1">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Calculate and display total
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            document.getElementById('cartTotal').textContent = `₹${total}`;
+            summary.classList.remove('hidden');
+
+            lucide.createIcons();
+        }
+
+        // Update Item Quantity
+        function updateQuantity(productId, newQuantity) {
+            if (newQuantity <= 0) {
+                removeFromCart(productId);
+                return;
+            }
+
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                item.quantity = newQuantity;
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartDisplay();
+                displayCartItems();
+            }
+        }
+
+        // Remove Item from Cart
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartDisplay();
+            displayCartItems();
+        }
+
+        // Clear Cart
+        function clearCart() {
+            if (confirm('Are you sure you want to clear your cart?')) {
+                cart = [];
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartDisplay();
+                displayCartItems();
+            }
+        }
+
+        // Checkout
+        async function checkout() {
+            if (cart.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+
+            const user = JSON.parse(localStorage.getItem('user'));
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+            const orderData = {
+                userId: user.id,
+                items: cart.map(item => ({
+                    product: item.id,
+                    quantity: item.quantity,
+                    price: item.price
+                })),
+                totalAmount: total
+            };
+
+            try {
+                const response = await fetch('http://localhost:3001/api/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(orderData)
+                });
+
+                if (response.ok) {
+                    alert(`✅ Order placed successfully! Total: ₹${total}`);
+                    cart = [];
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    updateCartDisplay();
+                    closeModal('cartModal');
+                } else {
+                    const error = await response.json();
+                    alert(`❌ Order failed: ${error.error}`);
+                }
+            } catch (error) {
+                console.error('Error placing order:', error);
+                alert('❌ Order failed. Please try again.');
+            }
+        }
+
+        // Load User Profile
+        function loadUserProfile() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user) {
+                document.getElementById('profileName').value = user.name || '';
+                document.getElementById('profileEmail').value = user.email || '';
+                document.getElementById('profilePhone').value = user.phone || '';
+            }
+        }
+
+        // Handle Profile Form Submission
+        document.getElementById('profileForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const user = JSON.parse(localStorage.getItem('user'));
+            const updatedData = {
+                name: document.getElementById('profileName').value,
+                phone: document.getElementById('profilePhone').value
+            };
+
+            try {
+                const response = await fetch(`http://localhost:3001/api/users/${user.id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(updatedData)
+                });
+
+                if (response.ok) {
+                    const updatedUser = await response.json();
+                    localStorage.setItem('user', JSON.stringify(updatedUser));
+                    document.getElementById('welcomeMessage').textContent = `Welcome, ${updatedUser.name}!`;
+                    alert('✅ Profile updated successfully!');
+                    closeModal('profileModal');
+                } else {
+                    const error = await response.json();
+                    alert(`❌ Update failed: ${error.error}`);
+                }
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                alert('❌ Update failed. Please try again.');
+            }
+        });
+
+        // Handle Support Form Submission
+        document.getElementById('supportForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const user = JSON.parse(localStorage.getItem('user'));
+            const supportData = {
+                userId: user.id,
+                category: document.getElementById('supportCategory').value,
+                subject: document.getElementById('supportSubject').value,
+                message: document.getElementById('supportMessage').value
+            };
+
+            try {
+                const response = await fetch('http://localhost:3001/api/support/tickets', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(supportData)
+                });
+
+                if (response.ok) {
+                    alert('✅ Support ticket created successfully! We\'ll get back to you soon.');
+                    document.getElementById('supportForm').reset();
+                    closeModal('supportModal');
+                } else {
+                    const error = await response.json();
+                    alert(`❌ Failed to create ticket: ${error.error}`);
+                }
+            } catch (error) {
+                console.error('Error creating support ticket:', error);
+                alert('❌ Failed to create ticket. Please try again.');
+            }
+        });
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function(e) {
+            const modals = ['bookSessionModal', 'shopWellnessModal', 'profileModal', 'supportModal', 'cartModal'];
+            modals.forEach(modalId => {
+                const modal = document.getElementById(modalId);
+                if (e.target === modal) {
+                    closeModal(modalId);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

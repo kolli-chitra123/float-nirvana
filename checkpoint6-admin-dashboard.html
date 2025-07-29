@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Float Nirvana - Admin Dashboard (Checkpoint 6)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f766e 0%, #1d4ed8 100%);
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .tab-active {
+            background: linear-gradient(135deg, #0f766e 0%, #1d4ed8 100%);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .tab-inactive {
+            background: rgba(255, 255, 255, 0.8);
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+        }
+        .tab-inactive:hover {
+            background: rgba(15, 118, 110, 0.1);
+            color: #0f766e;
+            border-color: #0f766e;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .loading-shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .notification-dot {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-6">
+                <div class="flex items-center space-x-4">
+                    <div class="bg-white/20 rounded-full p-2">
+                        <i data-lucide="waves" class="w-8 h-8"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold">Float Nirvana</h1>
+                        <p class="text-blue-100">Admin Dashboard</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="glass-effect px-4 py-2 rounded-lg">
+                        <span class="text-sm" id="adminWelcome">Welcome, Admin User</span>
+                    </div>
+                    <button onclick="showNotifications()" class="glass-effect p-2 rounded-lg hover:bg-white/20 transition-colors relative">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                        <span id="notificationBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center notification-dot hidden">0</span>
+                    </button>
+                    <button onclick="refreshDashboard()" class="glass-effect p-2 rounded-lg hover:bg-white/20 transition-colors">
+                        <i data-lucide="refresh-cw" class="w-5 h-5" id="refreshIcon"></i>
+                    </button>
+                    <button onclick="logout()" class="glass-effect p-2 rounded-lg hover:bg-white/20 transition-colors">
+                        <i data-lucide="log-out" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="bg-white border-b border-gray-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <nav class="flex space-x-8 overflow-x-auto">
+                <button onclick="showTab('overview')" id="tab-overview" class="tab-active px-4 py-4 text-sm font-medium rounded-t-lg transition-all duration-200 flex items-center space-x-2">
+                    <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                    <span>Overview</span>
+                </button>
+                <button onclick="showTab('users')" id="tab-users" class="tab-inactive px-4 py-4 text-sm font-medium rounded-t-lg transition-all duration-200 flex items-center space-x-2">
+                    <i data-lucide="users" class="w-4 h-4"></i>
+                    <span>User Management</span>
+                </button>
+                <button onclick="showTab('content')" id="tab-content" class="tab-inactive px-4 py-4 text-sm font-medium rounded-t-lg transition-all duration-200 flex items-center space-x-2">
+                    <i data-lucide="file-text" class="w-4 h-4"></i>
+                    <span>Content Management</span>
+                </button>
+                <button onclick="showTab('monitoring')" id="tab-monitoring" class="tab-inactive px-4 py-4 text-sm font-medium rounded-t-lg transition-all duration-200 flex items-center space-x-2">
+                    <i data-lucide="activity" class="w-4 h-4"></i>
+                    <span>Monitoring & Analytics</span>
+                </button>
+                <button onclick="showTab('configuration')" id="tab-configuration" class="tab-inactive px-4 py-4 text-sm font-medium rounded-t-lg transition-all duration-200 flex items-center space-x-2">
+                    <i data-lucide="settings" class="w-4 h-4"></i>
+                    <span>Website Configuration</span>
+                </button>
+                <button onclick="showTab('database')" id="tab-database" class="tab-inactive px-4 py-4 text-sm font-medium rounded-t-lg transition-all duration-200 flex items-center space-x-2">
+                    <i data-lucide="database" class="w-4 h-4"></i>
+                    <span>Database Management</span>
+                </button>
+                <button onclick="showTab('support')" id="tab-support" class="tab-inactive px-4 py-4 text-sm font-medium rounded-t-lg transition-all duration-200 flex items-center space-x-2">
+                    <i data-lucide="message-square" class="w-4 h-4"></i>
+                    <span>Support & Feedback</span>
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Overview Tab -->
+        <div id="content-overview" class="tab-content">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Dashboard Overview</h2>
+                <p class="text-gray-600 mt-1">Welcome to your comprehensive admin dashboard</p>
+            </div>
+            
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 card-hover transition-all duration-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Total Users</p>
+                            <p class="text-3xl font-bold text-gray-900" id="totalUsers">
+                                <span class="loading-shimmer rounded w-16 h-8 inline-block"></span>
+                            </p>
+                            <p class="text-sm text-green-600 flex items-center mt-1">
+                                <i data-lucide="trending-up" class="w-4 h-4 mr-1"></i>
+                                <span id="usersGrowth">Loading...</span>
+                            </p>
+                        </div>
+                        <div class="bg-blue-100 p-3 rounded-xl">
+                            <i data-lucide="users" class="w-8 h-8 text-blue-600"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 card-hover transition-all duration-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Total Admins</p>
+                            <p class="text-3xl font-bold text-gray-900" id="totalAdmins">
+                                <span class="loading-shimmer rounded w-12 h-8 inline-block"></span>
+                            </p>
+                            <p class="text-sm text-teal-600 flex items-center mt-1">
+                                <i data-lucide="shield" class="w-4 h-4 mr-1"></i>
+                                <span id="adminsInfo">Active</span>
+                            </p>
+                        </div>
+                        <div class="bg-teal-100 p-3 rounded-xl">
+                            <i data-lucide="shield" class="w-8 h-8 text-teal-600"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 card-hover transition-all duration-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Available Sessions</p>
+                            <p class="text-3xl font-bold text-gray-900" id="totalSessions">
+                                <span class="loading-shimmer rounded w-12 h-8 inline-block"></span>
+                            </p>
+                            <p class="text-sm text-green-600 flex items-center mt-1">
+                                <i data-lucide="calendar" class="w-4 h-4 mr-1"></i>
+                                <span id="sessionsInfo">Active</span>
+                            </p>
+                        </div>
+                        <div class="bg-green-100 p-3 rounded-xl">
+                            <i data-lucide="calendar" class="w-8 h-8 text-green-600"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 card-hover transition-all duration-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Support Tickets</p>
+                            <p class="text-3xl font-bold text-gray-900" id="totalTickets">
+                                <span class="loading-shimmer rounded w-12 h-8 inline-block"></span>
+                            </p>
+                            <p class="text-sm text-orange-600 flex items-center mt-1">
+                                <i data-lucide="message-square" class="w-4 h-4 mr-1"></i>
+                                <span id="ticketsInfo">Pending</span>
+                            </p>
+                        </div>
+                            <i data-lucide="message-square" class="w-8 h-8 text-orange-600"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-6 text-white cursor-pointer hover:from-blue-600 hover:to-blue-700 transition-all duration-200 card-hover" onclick="showTab('users')">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold">Manage Users</h3>
+                            <p class="text-blue-100">View, edit, ban users</p>
+                            <span class="bg-white text-blue-600 text-xs px-2 py-1 rounded-full font-medium" id="quickUsersCount">
+                                Loading...
+                            </span>
+                        </div>
+                        <i data-lucide="users" class="w-8 h-8 text-blue-200"></i>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-teal-500 to-teal-600 rounded-xl p-6 text-white cursor-pointer hover:from-teal-600 hover:to-teal-700 transition-all duration-200 card-hover" onclick="showTab('content')">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold">Content Management</h3>
+                            <p class="text-teal-100">Add/edit sessions & products</p>
+                            <span class="bg-white text-teal-600 text-xs px-2 py-1 rounded-full font-medium" id="quickSessionsCount">
+                                Loading...
+                            </span>
+                        </div>
+                        <i data-lucide="file-text" class="w-8 h-8 text-teal-200"></i>
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-6 text-white cursor-pointer hover:from-orange-600 hover:to-orange-700 transition-all duration-200 card-hover" onclick="showTab('support')">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold">Support Center</h3>
+                            <p class="text-orange-100">Handle user issues</p>
+                            <span class="bg-white text-orange-600 text-xs px-2 py-1 rounded-full font-medium" id="quickTicketsCount">
+                                Loading...
+                            </span>
+                        </div>
+                        <i data-lucide="message-square" class="w-8 h-8 text-orange-200"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Management Tab -->
+        <div id="content-users" class="tab-content hidden">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">User Management</h2>
+                <p class="text-gray-600 mt-1">View, update, delete user accounts • Approve or ban users</p>
+            </div>
+
+            <!-- Users Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                    <div class="flex items-center">
+                        <div class="bg-blue-100 p-2 rounded-lg mr-3">
+                            <i data-lucide="users" class="w-5 h-5 text-blue-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Regular Users</p>
+                            <p class="text-xl font-bold" id="regularUsersCount">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                    <div class="flex items-center">
+                        <div class="bg-teal-100 p-2 rounded-lg mr-3">
+                            <i data-lucide="shield" class="w-5 h-5 text-teal-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Admin Users</p>
+                            <p class="text-xl font-bold" id="adminUsersCount">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                    <div class="flex items-center">
+                        <div class="bg-green-100 p-2 rounded-lg mr-3">
+                            <i data-lucide="user-check" class="w-5 h-5 text-green-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Active Users</p>
+                            <p class="text-xl font-bold" id="activeUsersCount">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Table -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-lg font-semibold text-gray-900">All Users</h3>
+                        <button onclick="refreshUsers()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            <i data-lucide="refresh-cw" class="w-4 h-4 mr-2 inline"></i>
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody" class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td colspan="6" class="px-6 py-4 text-center">
+                                    <div class="loading-shimmer rounded w-full h-8"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Management Tab -->
+        <div id="content-content" class="tab-content hidden">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Content Management</h2>
+                <p class="text-gray-600 mt-1">Add/edit/delete website content • Manage sessions, services, products</p>
+            </div>
+
+            <!-- Content Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                    <div class="flex items-center">
+                        <div class="bg-teal-100 p-2 rounded-lg mr-3">
+                            <i data-lucide="calendar" class="w-5 h-5 text-teal-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Float Sessions</p>
+                            <p class="text-xl font-bold" id="contentSessionsCount">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                    <div class="flex items-center">
+                        <div class="bg-blue-100 p-2 rounded-lg mr-3">
+                            <i data-lucide="shopping-bag" class="w-5 h-5 text-blue-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Products</p>
+                            <p class="text-xl font-bold" id="contentProductsCount">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                    <div class="flex items-center">
+                        <div class="bg-green-100 p-2 rounded-lg mr-3">
+                            <i data-lucide="calendar-check" class="w-5 h-5 text-green-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Bookings</p>
+                            <p class="text-xl font-bold" id="contentBookingsCount">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Management Sections -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Sessions Management -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                    <div class="p-6 border-b border-gray-200">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg font-semibold text-gray-900">Float Sessions</h3>
+                            <button onclick="addNewSession()" class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors">
+                                <i data-lucide="plus" class="w-4 h-4 mr-2 inline"></i>
+                                Add Session
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div id="sessionsListContainer" class="space-y-3">
+                            <div class="loading-shimmer rounded w-full h-16"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Management -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                    <div class="p-6 border-b border-gray-200">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg font-semibold text-gray-900">Wellness Products</h3>
+                            <button onclick="addNewProduct()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                <i data-lucide="plus" class="w-4 h-4 mr-2 inline"></i>
+                                Add Product
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div id="productsListContainer" class="space-y-3">
+                            <div class="loading-shimmer rounded w-full h-16"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monitoring & Analytics Tab -->
+        <div id="content-monitoring" class="tab-content hidden">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Monitoring & Analytics</h2>
+                <p class="text-gray-600 mt-1">Track user activities • View analytics and reports</p>
+            </div>
+
+            <!-- Analytics Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                    <div class="flex items-center">
+                        <div class="bg-green-100 p-2 rounded-lg mr-3">
+                            <i data-lucide="trending-up" class="w-5 h-5 text-green-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Total Revenue</p>
+                            <p class="text-xl font-bold" id="totalRevenue">₹0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                    <div class="flex items-center">
+                        <div class="bg-blue-100 p-2 rounded-lg mr-3">
+                            <i data-lucide="calendar-check" class="w-5 h-5 text-blue-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Total Bookings</p>
+                            <p class="text-xl font-bold" id="totalBookings">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                    <div class="flex items-center">
+                        <div class="bg-purple-100 p-2 rounded-lg mr-3">
+                            <i data-lucide="shopping-cart" class="w-5 h-5 text-purple-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Total Orders</p>
+                            <p class="text-xl font-bold" id="totalOrders">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                    <div class="flex items-center">
+                        <div class="bg-orange-100 p-2 rounded-lg mr-3">
+                            <i data-lucide="activity" class="w-5 h-5 text-orange-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Active Users</p>
+                            <p class="text-xl font-bold" id="activeUsersAnalytics">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activities -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                    <div class="p-6 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900">Recent User Activities</h3>
+                    </div>
+                    <div class="p-6">
+                        <div id="recentActivitiesContainer" class="space-y-3">
+                            <div class="loading-shimmer rounded w-full h-12"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                    <div class="p-6 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900">Recent Bookings</h3>
+                    </div>
+                    <div class="p-6">
+                        <div id="recentBookingsContainer" class="space-y-3">
+                            <div class="loading-shimmer rounded w-full h-12"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Website Configuration Tab -->
+        <div id="content-configuration" class="tab-content hidden">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Website Configuration</h2>
+                <p class="text-gray-600 mt-1">Manage settings, security, integrations • Payment gateways, APIs</p>
+            </div>
+
+            <!-- Configuration Sections -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- General Settings -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                    <div class="p-6 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900">General Settings</h3>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Website Name</label>
+                            <input type="text" id="websiteName" value="Float Nirvana" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Contact Email</label>
+                            <input type="email" id="contactEmail" value="contact@floatnirvana.com" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                            <input type="tel" id="phoneNumber" value="+1-555-FLOAT" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                        </div>
+                        <button onclick="saveGeneralSettings()" class="w-full bg-teal-600 text-white py-2 px-4 rounded-lg hover:bg-teal-700 transition-colors">
+                            Save General Settings
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Security Settings -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                    <div class="p-6 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900">Security Settings</h3>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-medium text-gray-900">Two-Factor Authentication</p>
+                                <p class="text-sm text-gray-500">Enable 2FA for admin accounts</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="twoFactorAuth" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-teal-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-medium text-gray-900">Session Timeout</p>
+                                <p class="text-sm text-gray-500">Auto-logout after inactivity</p>
+                            </div>
+                            <select id="sessionTimeout" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                                <option value="30">30 minutes</option>
+                                <option value="60" selected>1 hour</option>
+                                <option value="120">2 hours</option>
+                                <option value="240">4 hours</option>
+                            </select>
+                        </div>
+                        <button onclick="saveSecuritySettings()" class="w-full bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors">
+                            Save Security Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Database Management Tab -->
+        <div id="content-database" class="tab-content hidden">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Database Management</h2>
+                <p class="text-gray-600 mt-1">Maintain and back up data • Database operations and monitoring</p>
+            </div>
+
+            <!-- Database Status -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                    <div class="flex items-center">
+                        <div class="bg-green-100 p-2 rounded-lg mr-3">
+                            <i data-lucide="database" class="w-5 h-5 text-green-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Database Status</p>
+                            <p class="text-lg font-bold text-green-600" id="dbStatus">Connected</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                    <div class="flex items-center">
+                        <div class="bg-blue-100 p-2 rounded-lg mr-3">
+                            <i data-lucide="hard-drive" class="w-5 h-5 text-blue-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Total Collections</p>
+                            <p class="text-xl font-bold" id="totalCollections">7</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                    <div class="flex items-center">
+                        <div class="bg-purple-100 p-2 rounded-lg mr-3">
+                            <i data-lucide="clock" class="w-5 h-5 text-purple-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Last Backup</p>
+                            <p class="text-sm font-bold" id="lastBackup">Never</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Database Operations -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Backup & Restore -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                    <div class="p-6 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900">Backup & Restore</h3>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                            <div class="flex">
+                                <i data-lucide="alert-triangle" class="w-5 h-5 text-yellow-600 mr-2 mt-0.5"></i>
+                                <div>
+                                    <p class="text-sm font-medium text-yellow-800">Backup Recommendation</p>
+                                    <p class="text-sm text-yellow-700">Regular backups ensure data safety. Last backup: Never</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="createBackup()" class="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors">
+                            <i data-lucide="download" class="w-4 h-4 mr-2 inline"></i>
+                            Create Backup
+                        </button>
+                        <button onclick="restoreBackup()" class="w-full bg-orange-600 text-white py-2 px-4 rounded-lg hover:bg-orange-700 transition-colors">
+                            <i data-lucide="upload" class="w-4 h-4 mr-2 inline"></i>
+                            Restore from Backup
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Data Management -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                    <div class="p-6 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900">Data Management</h3>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <div id="collectionsInfo" class="space-y-2">
+                            <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+                                <span class="text-sm font-medium">Users</span>
+                                <span class="text-sm text-gray-600" id="usersCollectionCount">Loading...</span>
+                            </div>
+                            <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+                                <span class="text-sm font-medium">Admins</span>
+                                <span class="text-sm text-gray-600" id="adminsCollectionCount">Loading...</span>
+                            </div>
+                            <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+                                <span class="text-sm font-medium">Sessions</span>
+                                <span class="text-sm text-gray-600" id="sessionsCollectionCount">Loading...</span>
+                            </div>
+                            <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+                                <span class="text-sm font-medium">Products</span>
+                                <span class="text-sm text-gray-600" id="productsCollectionCount">Loading...</span>
+                            </div>
+                            <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+                                <span class="text-sm font-medium">Bookings</span>
+                                <span class="text-sm text-gray-600" id="bookingsCollectionCount">Loading...</span>
+                            </div>
+                            <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+                                <span class="text-sm font-medium">Orders</span>
+                                <span class="text-sm text-gray-600" id="ordersCollectionCount">Loading...</span>
+                            </div>
+                            <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+                                <span class="text-sm font-medium">Support Tickets</span>
+                                <span class="text-sm text-gray-600" id="ticketsCollectionCount">Loading...</span>
+                            </div>
+                        </div>
+                        <button onclick="refreshDatabaseInfo()" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                            <i data-lucide="refresh-cw" class="w-4 h-4 mr-2 inline"></i>
+                            Refresh Database Info
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Support & Feedback Tab -->
+        <div id="content-support" class="tab-content hidden">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Support & Feedback</h2>
+                <p class="text-gray-600 mt-1">Resolve issues raised by users • Manage support tickets and feedback</p>
+            </div>
+
+            <!-- Support Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                    <div class="flex items-center">
+                        <div class="bg-orange-100 p-2 rounded-lg mr-3">
+                            <i data-lucide="clock" class="w-5 h-5 text-orange-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Open Tickets</p>
+                            <p class="text-xl font-bold" id="openTicketsCount">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                    <div class="flex items-center">
+                        <div class="bg-blue-100 p-2 rounded-lg mr-3">
+                            <i data-lucide="clock-3" class="w-5 h-5 text-blue-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">In Progress</p>
+                            <p class="text-xl font-bold" id="inProgressTicketsCount">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                    <div class="flex items-center">
+                        <div class="bg-green-100 p-2 rounded-lg mr-3">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-green-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Resolved</p>
+                            <p class="text-xl font-bold" id="resolvedTicketsCount">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                    <div class="flex items-center">
+                        <div class="bg-red-100 p-2 rounded-lg mr-3">
+                            <i data-lucide="alert-circle" class="w-5 h-5 text-red-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">High Priority</p>
+                            <p class="text-xl font-bold" id="highPriorityTicketsCount">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Support Tickets Table -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-lg font-semibold text-gray-900">Support Tickets</h3>
+                        <div class="flex space-x-2">
+                            <select id="ticketFilter" onchange="filterTickets()" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                                <option value="all">All Tickets</option>
+                                <option value="open">Open</option>
+                                <option value="in-progress">In Progress</option>
+                                <option value="resolved">Resolved</option>
+                                <option value="closed">Closed</option>
+                            </select>
+                            <button onclick="refreshSupportTickets()" class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors">
+                                <i data-lucide="refresh-cw" class="w-4 h-4 mr-2 inline"></i>
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ticket</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="supportTicketsTableBody" class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td colspan="7" class="px-6 py-4 text-center">
+                                    <div class="loading-shimmer rounded w-full h-8"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Global variables
+        let dashboardData = {
+            users: [],
+            admins: [],
+            sessions: [],
+            tickets: [],
+            lastUpdate: null
+        };
+
+        // Check authentication
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+        if (!token || user.role !== 'admin') {
+            window.location.href = 'checkpoint6-login.html';
+        }
+
+        // Update admin welcome message
+        if (user.name) {
+            document.getElementById('adminWelcome').textContent = `Welcome, ${user.name}`;
+        }
+
+        // Tab switching functionality
+        function showTab(tabName) {
+            // Hide all tab contents
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.add('hidden'));
+
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('[id^="tab-"]');
+            tabs.forEach(tab => {
+                tab.className = tab.className.replace('tab-active', 'tab-inactive');
+            });
+
+            // Show selected tab content
+            document.getElementById(`content-${tabName}`).classList.remove('hidden');
+
+            // Add active class to selected tab
+            const activeTab = document.getElementById(`tab-${tabName}`);
+            activeTab.className = activeTab.className.replace('tab-inactive', 'tab-active');
+
+            // Load tab-specific data
+            if (tabName === 'users') {
+                loadUsersData();
+            } else if (tabName === 'content') {
+                loadContentData();
+            } else if (tabName === 'monitoring') {
+                loadMonitoringData();
+            } else if (tabName === 'configuration') {
+                loadConfigurationData();
+            } else if (tabName === 'database') {
+                loadDatabaseData();
+            } else if (tabName === 'support') {
+                loadSupportData();
+            }
+        }
+
+        // Real-time data loading functions
+        async function loadDashboardStats() {
+            try {
+                // Load users
+                const usersResponse = await fetch('http://localhost:3001/api/users');
+                const users = await usersResponse.json();
+                dashboardData.users = users;
+
+                // Load admins
+                const adminsResponse = await fetch('http://localhost:3001/api/admins');
+                const admins = await adminsResponse.json();
+                dashboardData.admins = admins;
+
+                // Load sessions
+                const sessionsResponse = await fetch('http://localhost:3001/api/sessions');
+                const sessions = await sessionsResponse.json();
+                dashboardData.sessions = sessions;
+
+                // Load support tickets
+                const ticketsResponse = await fetch('http://localhost:3001/api/admin/support/tickets');
+                const tickets = await ticketsResponse.json();
+                dashboardData.tickets = tickets;
+
+                // Update UI
+                updateDashboardUI();
+
+                console.log('✅ Dashboard data loaded successfully');
+            } catch (error) {
+                console.error('❌ Error loading dashboard data:', error);
+                showErrorState();
+            }
+        }
+
+        // Update dashboard UI with real data
+        function updateDashboardUI() {
+            const { users, admins, sessions, tickets } = dashboardData;
+
+            // Update stats cards
+            document.getElementById('totalUsers').textContent = users.length;
+            document.getElementById('totalAdmins').textContent = admins.length;
+            document.getElementById('totalSessions').textContent = sessions.length;
+            document.getElementById('totalTickets').textContent = tickets.length;
+
+            // Update growth indicators
+            document.getElementById('usersGrowth').textContent = `${users.length} total users`;
+            document.getElementById('adminsInfo').textContent = `${admins.length} active`;
+            document.getElementById('sessionsInfo').textContent = `${sessions.length} available`;
+
+            const openTickets = tickets.filter(t => t.status === 'open').length;
+            document.getElementById('ticketsInfo').textContent = `${openTickets} pending`;
+
+            // Update quick action counts
+            document.getElementById('quickUsersCount').textContent = `${users.length} total`;
+            document.getElementById('quickSessionsCount').textContent = `${sessions.length} sessions`;
+            document.getElementById('quickTicketsCount').textContent = `${openTickets} pending`;
+
+            // Update notification badge
+            const notificationCount = openTickets;
+            const badge = document.getElementById('notificationBadge');
+            if (notificationCount > 0) {
+                badge.textContent = notificationCount;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+
+            dashboardData.lastUpdate = new Date();
+        }
+
+        // Load users data for Users tab
+        async function loadUsersData() {
+            try {
+                const { users, admins } = dashboardData;
+
+                // Update user stats
+                document.getElementById('regularUsersCount').textContent = users.length;
+                document.getElementById('adminUsersCount').textContent = admins.length;
+                document.getElementById('activeUsersCount').textContent = users.filter(u => u.isActive).length;
+
+                // Update users table
+                const tbody = document.getElementById('usersTableBody');
+                if (users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">No users found</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = users.map(user => `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                    <span class="text-blue-600 font-medium text-sm">${user.name.charAt(0).toUpperCase()}</span>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">${user.name}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${user.email}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+                                ${user.role}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 py-1 text-xs font-medium rounded-full ${user.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                ${user.isActive ? 'Active' : 'Inactive'}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            ${new Date(user.createdAt).toLocaleDateString()}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button onclick="editUser('${user.id}')" class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+                            <button onclick="toggleUserStatus('${user.id}', ${!user.isActive})" class="text-red-600 hover:text-red-900">
+                                ${user.isActive ? 'Deactivate' : 'Activate'}
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+
+            } catch (error) {
+                console.error('❌ Error loading users data:', error);
+            }
+        }
+
+        // Load Content Management data
+        async function loadContentData() {
+            try {
+                const { sessions, products } = dashboardData;
+
+                // Load bookings
+                const bookingsResponse = await fetch('http://localhost:3001/api/bookings');
+                const bookings = await bookingsResponse.json();
+                dashboardData.bookings = bookings;
+
+                // Update content stats
+                document.getElementById('contentSessionsCount').textContent = sessions.length;
+                document.getElementById('contentProductsCount').textContent = products.length;
+                document.getElementById('contentBookingsCount').textContent = bookings.length;
+
+                // Load sessions list
+                const sessionsContainer = document.getElementById('sessionsListContainer');
+                if (sessions.length === 0) {
+                    sessionsContainer.innerHTML = '<p class="text-gray-500 text-center">No sessions found</p>';
+                } else {
+                    sessionsContainer.innerHTML = sessions.map(session => `
+                        <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                            <div>
+                                <h4 class="font-medium text-gray-900">${session.title}</h4>
+                                <p class="text-sm text-gray-500">${session.duration} min • ₹${session.price}</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="editSession('${session._id}')" class="text-blue-600 hover:text-blue-800 text-sm">Edit</button>
+                                <button onclick="deleteSession('${session._id}')" class="text-red-600 hover:text-red-800 text-sm">Delete</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                // Load products list
+                const productsContainer = document.getElementById('productsListContainer');
+                if (products.length === 0) {
+                    productsContainer.innerHTML = '<p class="text-gray-500 text-center">No products found</p>';
+                } else {
+                    productsContainer.innerHTML = products.map(product => `
+                        <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                            <div>
+                                <h4 class="font-medium text-gray-900">${product.name}</h4>
+                                <p class="text-sm text-gray-500">${product.category} • ₹${product.price}</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="editProduct('${product._id}')" class="text-blue-600 hover:text-blue-800 text-sm">Edit</button>
+                                <button onclick="deleteProduct('${product._id}')" class="text-red-600 hover:text-red-800 text-sm">Delete</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+            } catch (error) {
+                console.error('❌ Error loading content data:', error);
+            }
+        }
+
+        // Load Monitoring & Analytics data
+        async function loadMonitoringData() {
+            try {
+                const { users, sessions, tickets, bookings } = dashboardData;
+
+                // Load orders
+                const ordersResponse = await fetch('http://localhost:3001/api/orders');
+                const orders = await ordersResponse.json();
+                dashboardData.orders = orders;
+
+                // Calculate revenue
+                const totalRevenue = orders.reduce((sum, order) => sum + order.totalAmount, 0);
+
+                // Update analytics stats
+                document.getElementById('totalRevenue').textContent = `₹${totalRevenue.toLocaleString()}`;
+                document.getElementById('totalBookings').textContent = bookings.length;
+                document.getElementById('totalOrders').textContent = orders.length;
+                document.getElementById('activeUsersAnalytics').textContent = users.filter(u => u.isActive).length;
+
+                // Load recent activities
+                const activitiesContainer = document.getElementById('recentActivitiesContainer');
+                const recentUsers = users.slice(-5).reverse();
+                activitiesContainer.innerHTML = recentUsers.map(user => `
+                    <div class="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                            <span class="text-blue-600 font-medium text-sm">${user.name.charAt(0).toUpperCase()}</span>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-gray-900">${user.name} registered</p>
+                            <p class="text-xs text-gray-500">${new Date(user.createdAt).toLocaleDateString()}</p>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Load recent bookings
+                const bookingsContainer = document.getElementById('recentBookingsContainer');
+                const recentBookings = bookings.slice(-5).reverse();
+                if (recentBookings.length === 0) {
+                    bookingsContainer.innerHTML = '<p class="text-gray-500 text-center">No recent bookings</p>';
+                } else {
+                    bookingsContainer.innerHTML = recentBookings.map(booking => `
+                        <div class="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Booking #${booking._id.slice(-6)}</p>
+                                <p class="text-xs text-gray-500">₹${booking.totalAmount}</p>
+                            </div>
+                            <span class="px-2 py-1 text-xs font-medium rounded-full ${booking.status === 'confirmed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                                ${booking.status}
+                            </span>
+                        </div>
+                    `).join('');
+                }
+
+            } catch (error) {
+                console.error('❌ Error loading monitoring data:', error);
+            }
+        }
+
+        // Load Configuration data
+        function loadConfigurationData() {
+            // Configuration data is mostly static, just ensure form is populated
+            console.log('✅ Configuration tab loaded');
+        }
+
+        // Load Database data
+        async function loadDatabaseData() {
+            try {
+                const { users, admins, sessions, tickets, bookings, orders } = dashboardData;
+
+                // Update collection counts
+                document.getElementById('usersCollectionCount').textContent = `${users.length} documents`;
+                document.getElementById('adminsCollectionCount').textContent = `${admins.length} documents`;
+                document.getElementById('sessionsCollectionCount').textContent = `${sessions.length} documents`;
+                document.getElementById('productsCollectionCount').textContent = `${dashboardData.products?.length || 0} documents`;
+                document.getElementById('bookingsCollectionCount').textContent = `${bookings.length} documents`;
+                document.getElementById('ordersCollectionCount').textContent = `${orders.length} documents`;
+                document.getElementById('ticketsCollectionCount').textContent = `${tickets.length} documents`;
+
+            } catch (error) {
+                console.error('❌ Error loading database data:', error);
+            }
+        }
+
+        // Load Support data
+        async function loadSupportData() {
+            try {
+                const { tickets } = dashboardData;
+
+                // Update support stats
+                const openTickets = tickets.filter(t => t.status === 'open');
+                const inProgressTickets = tickets.filter(t => t.status === 'in-progress');
+                const resolvedTickets = tickets.filter(t => t.status === 'resolved');
+                const highPriorityTickets = tickets.filter(t => t.priority === 'high' || t.priority === 'urgent');
+
+                document.getElementById('openTicketsCount').textContent = openTickets.length;
+                document.getElementById('inProgressTicketsCount').textContent = inProgressTickets.length;
+                document.getElementById('resolvedTicketsCount').textContent = resolvedTickets.length;
+                document.getElementById('highPriorityTicketsCount').textContent = highPriorityTickets.length;
+
+                // Load support tickets table
+                const tbody = document.getElementById('supportTicketsTableBody');
+                if (tickets.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">No support tickets found</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = tickets.map(ticket => `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div>
+                                <div class="text-sm font-medium text-gray-900">${ticket.subject}</div>
+                                <div class="text-sm text-gray-500">#${ticket._id.slice(-6)}</div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            ${ticket.user?.name || 'Unknown User'}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">
+                                ${ticket.category}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 py-1 text-xs font-medium rounded-full ${getPriorityColor(ticket.priority)}">
+                                ${ticket.priority}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(ticket.status)}">
+                                ${ticket.status}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            ${new Date(ticket.createdAt).toLocaleDateString()}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button onclick="viewTicket('${ticket._id}')" class="text-blue-600 hover:text-blue-900 mr-3">View</button>
+                            <button onclick="resolveTicket('${ticket._id}')" class="text-green-600 hover:text-green-900">Resolve</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+            } catch (error) {
+                console.error('❌ Error loading support data:', error);
+            }
+        }
+
+        // Utility functions
+        function showErrorState() {
+            document.getElementById('totalUsers').textContent = 'Error';
+            document.getElementById('totalAdmins').textContent = 'Error';
+            document.getElementById('totalSessions').textContent = 'Error';
+            document.getElementById('totalTickets').textContent = 'Error';
+        }
+
+        function refreshDashboard() {
+            const refreshIcon = document.getElementById('refreshIcon');
+            refreshIcon.style.animation = 'spin 1s linear infinite';
+
+            loadDashboardStats().then(() => {
+                refreshIcon.style.animation = '';
+            });
+        }
+
+        function refreshUsers() {
+            loadUsersData();
+        }
+
+        function showNotifications() {
+            const { tickets } = dashboardData;
+            const openTickets = tickets.filter(t => t.status === 'open');
+
+            if (openTickets.length === 0) {
+                alert('No pending notifications');
+                return;
+            }
+
+            const message = `You have ${openTickets.length} pending support tickets`;
+            alert(message);
+        }
+
+        function editUser(userId) {
+            alert(`Edit user functionality would open for user ID: ${userId}`);
+        }
+
+        function toggleUserStatus(userId, newStatus) {
+            const action = newStatus ? 'activate' : 'deactivate';
+            if (confirm(`Are you sure you want to ${action} this user?`)) {
+                alert(`User ${action}d successfully!`);
+            }
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'checkpoint6-login.html';
+            }
+        }
+
+        // Content Management Functions
+        function addNewSession() {
+            const title = prompt('Enter session title:');
+            const description = prompt('Enter session description:');
+            const duration = prompt('Enter duration (minutes):');
+            const price = prompt('Enter price (₹):');
+            const category = prompt('Enter category (relaxation/therapy/meditation/wellness):');
+
+            if (title && description && duration && price && category) {
+                fetch('http://localhost:3001/api/sessions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, description, duration: parseInt(duration), price: parseInt(price), category })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('✅ Session added successfully!');
+                    loadDashboardStats();
+                })
+                .catch(error => {
+                    console.error('Error adding session:', error);
+                    alert('❌ Failed to add session');
+                });
+            }
+        }
+
+        function addNewProduct() {
+            const name = prompt('Enter product name:');
+            const description = prompt('Enter product description:');
+            const price = prompt('Enter price (₹):');
+            const category = prompt('Enter category (wellness/accessories/supplements/gift-cards):');
+            const stockQuantity = prompt('Enter stock quantity:');
+
+            if (name && description && price && category && stockQuantity) {
+                fetch('http://localhost:3001/api/products', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, description, price: parseInt(price), category, stockQuantity: parseInt(stockQuantity) })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('✅ Product added successfully!');
+                    loadDashboardStats();
+                })
+                .catch(error => {
+                    console.error('Error adding product:', error);
+                    alert('❌ Failed to add product');
+                });
+            }
+        }
+
+        function editSession(sessionId) {
+            alert(`Edit session functionality would open for session ID: ${sessionId}`);
+        }
+
+        function deleteSession(sessionId) {
+            if (confirm('Are you sure you want to delete this session?')) {
+                alert(`Session ${sessionId} would be deleted (API call needed)`);
+            }
+        }
+
+        function editProduct(productId) {
+            alert(`Edit product functionality would open for product ID: ${productId}`);
+        }
+
+        function deleteProduct(productId) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                alert(`Product ${productId} would be deleted (API call needed)`);
+            }
+        }
+
+        // Configuration Functions
+        function saveGeneralSettings() {
+            const websiteName = document.getElementById('websiteName').value;
+            const contactEmail = document.getElementById('contactEmail').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+
+            alert(`✅ General settings saved!\nWebsite: ${websiteName}\nEmail: ${contactEmail}\nPhone: ${phoneNumber}`);
+        }
+
+        function saveSecuritySettings() {
+            const twoFactorAuth = document.getElementById('twoFactorAuth').checked;
+            const sessionTimeout = document.getElementById('sessionTimeout').value;
+
+            alert(`✅ Security settings saved!\n2FA: ${twoFactorAuth ? 'Enabled' : 'Disabled'}\nTimeout: ${sessionTimeout} minutes`);
+        }
+
+        // Database Functions
+        function createBackup() {
+            if (confirm('Create a backup of the database? This may take a few minutes.')) {
+                alert('✅ Backup created successfully! (This would trigger a real backup process)');
+                document.getElementById('lastBackup').textContent = new Date().toLocaleDateString();
+            }
+        }
+
+        function restoreBackup() {
+            if (confirm('⚠️ WARNING: This will restore the database from a backup. All current data will be replaced. Continue?')) {
+                alert('✅ Database restored from backup! (This would trigger a real restore process)');
+            }
+        }
+
+        function refreshDatabaseInfo() {
+            loadDatabaseData();
+            alert('✅ Database information refreshed!');
+        }
+
+        // Support Functions
+        function filterTickets() {
+            const filter = document.getElementById('ticketFilter').value;
+            alert(`Filtering tickets by: ${filter} (This would filter the table)`);
+        }
+
+        function refreshSupportTickets() {
+            loadSupportData();
+        }
+
+        function viewTicket(ticketId) {
+            alert(`View ticket details for ID: ${ticketId} (This would open a detailed view)`);
+        }
+
+        function resolveTicket(ticketId) {
+            if (confirm('Mark this ticket as resolved?')) {
+                alert(`✅ Ticket ${ticketId} marked as resolved! (This would update the database)`);
+            }
+        }
+
+        // Helper functions
+        function getPriorityColor(priority) {
+            switch(priority) {
+                case 'urgent': return 'bg-red-100 text-red-800';
+                case 'high': return 'bg-orange-100 text-orange-800';
+                case 'medium': return 'bg-yellow-100 text-yellow-800';
+                case 'low': return 'bg-green-100 text-green-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        function getStatusColor(status) {
+            switch(status) {
+                case 'open': return 'bg-red-100 text-red-800';
+                case 'in-progress': return 'bg-blue-100 text-blue-800';
+                case 'resolved': return 'bg-green-100 text-green-800';
+                case 'closed': return 'bg-gray-100 text-gray-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        // Auto-refresh dashboard every 30 seconds
+        setInterval(() => {
+            loadDashboardStats();
+        }, 30000);
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardStats();
+        });
+
+        // Add CSS animation for spin
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

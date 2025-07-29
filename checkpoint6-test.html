@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkpoint 6 - Admin Dashboard Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .status {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 10px;
+            font-weight: bold;
+            border: 2px solid;
+        }
+        .success { background: rgba(34, 197, 94, 0.3); border-color: #22c55e; }
+        .error { background: rgba(239, 68, 68, 0.3); border-color: #ef4444; }
+        .loading { background: rgba(59, 130, 246, 0.3); border-color: #3b82f6; }
+        .info { background: rgba(168, 85, 247, 0.3); border-color: #a855f7; }
+        
+        .test-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .login-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .form-group {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 8px 5px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        
+        button:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .feature-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .credentials {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #22c55e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌊 Float Nirvana - Checkpoint 6 Test</h1>
+            <p>Testing Admin Dashboard Redirection & Complete System</p>
+        </div>
+        
+        <div id="connectionStatus" class="status loading">🔄 Testing backend connection...</div>
+        
+        <div class="test-section">
+            <h2>🔐 Authentication & Redirection Test</h2>
+            <p>Test the admin redirection functionality described in Checkpoint 6</p>
+            
+            <div class="credentials">
+                <strong>🔑 Test Credentials:</strong><br>
+                <strong>Admin:</strong> admin@floatnirvana.com / admin123 → Should redirect to /admin<br>
+                <strong>User:</strong> user@example.com / user123 → Should redirect to /dashboard
+            </div>
+            
+            <div class="login-form">
+                <div class="form-group">
+                    <h3>👑 Admin Login Test</h3>
+                    <input type="email" id="adminEmail" placeholder="Email" value="admin@floatnirvana.com">
+                    <input type="password" id="adminPassword" placeholder="Password" value="admin123">
+                    <button onclick="testAdminLogin()">Test Admin Login</button>
+                    <div id="adminResult"></div>
+                </div>
+                
+                <div class="form-group">
+                    <h3>👤 User Login Test</h3>
+                    <input type="email" id="userEmail" placeholder="Email" value="user@example.com">
+                    <input type="password" id="userPassword" placeholder="Password" value="user123">
+                    <button onclick="testUserLogin()">Test User Login</button>
+                    <div id="userResult"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>✨ Checkpoint 6 Features</h2>
+            <p>All features that should be available in the admin dashboard:</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Overview</h3>
+                    <p>Dashboard statistics and system health monitoring</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h3>User Management</h3>
+                    <p>Complete user administration with ban/unban functionality</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <h3>Content Management</h3>
+                    <p>Add/edit/delete sessions and products</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Monitoring & Analytics</h3>
+                    <p>User activities and performance tracking</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">⚙️</div>
+                    <h3>Website Configuration</h3>
+                    <p>Settings, security, and integrations</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🗄️</div>
+                    <h3>Database Management</h3>
+                    <p>Backup, restore, and data operations</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3>Support & Feedback</h3>
+                    <p>Comprehensive ticket management system</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🚀 Next Steps</h2>
+            <button onclick="openFullSite()">Open Full React Website</button>
+            <button onclick="testAllEndpoints()">Test All API Endpoints</button>
+            <button onclick="window.location.reload()">Refresh Tests</button>
+        </div>
+        
+        <div id="testResults"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3001';
+        
+        async function testBackendConnection() {
+            const status = document.getElementById('connectionStatus');
+            
+            try {
+                status.className = 'status loading';
+                status.textContent = '🔄 Testing backend connection...';
+                
+                const response = await fetch(`${API_BASE}/api/health`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    status.className = 'status success';
+                    status.textContent = '✅ Backend connected successfully! Ready for Checkpoint 6 testing.';
+                } else {
+                    throw new Error('Backend responded with error');
+                }
+            } catch (error) {
+                status.className = 'status error';
+                status.textContent = '❌ Backend connection failed! Please start the backend server.';
+            }
+        }
+        
+        async function testAdminLogin() {
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+            const result = document.getElementById('adminResult');
+            
+            try {
+                result.innerHTML = '<div class="status loading">🔄 Testing admin login...</div>';
+                
+                const response = await fetch(`${API_BASE}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.user.role === 'admin') {
+                    result.innerHTML = `<div class="status success">
+                        <strong>✅ Admin Login Successful!</strong><br>
+                        <strong>User:</strong> ${data.user.name}<br>
+                        <strong>Role:</strong> ${data.user.role}<br>
+                        <strong>Expected Redirect:</strong> /admin (New Admin Dashboard)<br>
+                        <strong>✨ All Checkpoint 6 features should be accessible!</strong>
+                    </div>`;
+                } else {
+                    result.innerHTML = `<div class="status error">
+                        <strong>❌ Admin Login Failed:</strong> ${data.error || 'Invalid response'}
+                    </div>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="status error">
+                    <strong>❌ Admin Login Error:</strong> ${error.message}
+                </div>`;
+            }
+        }
+        
+        async function testUserLogin() {
+            const email = document.getElementById('userEmail').value;
+            const password = document.getElementById('userPassword').value;
+            const result = document.getElementById('userResult');
+            
+            try {
+                result.innerHTML = '<div class="status loading">🔄 Testing user login...</div>';
+                
+                const response = await fetch(`${API_BASE}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.user.role === 'user') {
+                    result.innerHTML = `<div class="status success">
+                        <strong>✅ User Login Successful!</strong><br>
+                        <strong>User:</strong> ${data.user.name}<br>
+                        <strong>Role:</strong> ${data.user.role}<br>
+                        <strong>Expected Redirect:</strong> /dashboard (User Dashboard)
+                    </div>`;
+                } else {
+                    result.innerHTML = `<div class="status error">
+                        <strong>❌ User Login Failed:</strong> ${data.error || 'Invalid response'}
+                    </div>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="status error">
+                    <strong>❌ User Login Error:</strong> ${error.message}
+                </div>`;
+            }
+        }
+        
+        function openFullSite() {
+            window.open('http://localhost:5173', '_blank');
+        }
+        
+        async function testAllEndpoints() {
+            const results = document.getElementById('testResults');
+            results.innerHTML = '<div class="status loading">🔄 Testing all API endpoints...</div>';
+            
+            const endpoints = [
+                '/api/health',
+                '/api/users',
+                '/api/sessions',
+                '/api/admin/activities',
+                '/api/admin/support/tickets'
+            ];
+            
+            let html = '<div class="test-section"><h3>🔍 API Endpoint Tests</h3>';
+            
+            for (const endpoint of endpoints) {
+                try {
+                    const response = await fetch(`${API_BASE}${endpoint}`);
+                    const status = response.ok ? 'success' : 'error';
+                    const icon = response.ok ? '✅' : '❌';
+                    html += `<div class="status ${status}">${icon} ${endpoint} - ${response.status}</div>`;
+                } catch (error) {
+                    html += `<div class="status error">❌ ${endpoint} - Error: ${error.message}</div>`;
+                }
+            }
+            
+            html += '</div>';
+            results.innerHTML = html;
+        }
+        
+        // Auto-test on load
+        window.onload = function() {
+            testBackendConnection();
+        };
+    </script>
+</body>
+</html>
